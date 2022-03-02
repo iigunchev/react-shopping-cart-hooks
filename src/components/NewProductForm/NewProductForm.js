@@ -42,9 +42,6 @@ const NewProductForm = ({ saveNewProduct }) => {
     }, 500);
   };
 
-  // const { submitted } = this.state;
-  // const { saveNewProduct } = this.props;
-
   return (
     <>
       <Formik
