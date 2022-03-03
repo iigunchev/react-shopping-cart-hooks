@@ -41,38 +41,34 @@ function buildNewCartItem(cartItem) {
 }
 
 const App = () => {
-  // constructor(props) {
-  //   super(props);
 
-  //   this.state = {
-  //     products: [],
-  //     cartItems: [],
-  //     isLoading: false,
-  //     hasError: false,
-  //     loadingError: null,
-  //   };
-  // }
   const [products, setProducts] = useState([]);
   const [cartItems, setCartItems] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const [loadingError, setLoadingError] = useState(false);
-  const [newProductFormOpen, setNewProductFormOpen] = useState(true);
+  const [loadingError, setLoadingError] = useState(null);
 
   useEffect(() => {
     const prevItems = loadLocalStorageData();
-
     if (!prevItems) {
       setIsLoading(true);
-
-      api.getProducts().then((data) => {
+      api.getProducts()
+      .then((data) => {
+          console.log("dentro del then");
         setProducts(data);
-        setIsLoading(true);
-      });
+        setIsLoading(false);
+      })
+      .catch(()=>{
+        setIsLoading(false)
+        setHasError(true)
+        setLoadingError("error no controlado")
+      }
+
+      )
       return;
     }
-    setCartItems((prevState) => [...prevState]);
-    setProducts((prevState) => [...prevState]);
+    setCartItems(prevItems.cartItems);
+    setProducts(prevItems.products);
   }, []);
 
   useEffect(() => {
@@ -106,10 +102,7 @@ const App = () => {
     }
 
     const updatedProduct = buildNewCartItem(foundProduct);
-    setCartItems((prevState) => ({
-      ...prevState.cartItems,
-      updatedProduct,
-    }));
+    setCartItems((prevState) => [...prevState, updatedProduct]);
   };
 
   const handleChange = (event, productId) => {
@@ -198,17 +191,7 @@ const App = () => {
 
   const saveNewProduct = (newProduct) => {
     setProducts((prevState) => [newProduct, ...prevState.products]);
-    setNewProductFormOpen((prevState) => !prevState.newProductFormOpen);
   };
-
-  // render() {
-  //   const {
-  //     cartItems,
-  //     products,
-  //     isLoading,
-  //     hasError,
-  //     loadingError,
-  //   } = this.state;
 
   return (
     <BrowserRouter>
