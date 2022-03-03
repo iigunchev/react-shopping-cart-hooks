@@ -9,6 +9,7 @@ import * as api from "./api";
 const LOCAL_STORAGE_KEY = "react-sc-state";
 
 function loadLocalStorageData() {
+
   const prevItems = localStorage.getItem(LOCAL_STORAGE_KEY);
 
   if (!prevItems) {
@@ -56,32 +57,32 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [loadingError, setLoadingError] = useState(false);
+  const [newProductFormOpen, setNewProductFormOpen] = useState(true);
 
   useEffect(() => {
     const prevItems = loadLocalStorageData();
 
     if (!prevItems) {
-      setIsLoading(true)
+      setIsLoading(true);
 
       api.getProducts().then((data) => {
-        setProducts(data)
-        setIsLoading(true)
+        setProducts(data);
+        setIsLoading(true);
       });
       return;
     }
-    setCartItems(prevState => [...prevState])
-    setProducts(prevState => [...prevState])
-  }, [])
+    setCartItems((prevState) => [...prevState]);
+    setProducts((prevState) => [...prevState]);
+  }, []);
 
   useEffect(() => {
     localStorage.setItem(
       LOCAL_STORAGE_KEY,
       JSON.stringify({ cartItems, products }),
     );
-  }, [cartItems, products])
+  }, [cartItems, products]);
 
   const handleAddToCart = (productId) => {
-
     const prevCartItem = cartItems.find((item) => item.id === productId);
     const foundProduct = products.find((product) => product.id === productId);
 
@@ -105,14 +106,13 @@ const App = () => {
     }
 
     const updatedProduct = buildNewCartItem(foundProduct);
-    setCartItems(prevState => ({
+    setCartItems((prevState) => ({
       ...prevState.cartItems,
-      updatedProduct
-    }))
-  }
+      updatedProduct,
+    }));
+  };
 
   const handleChange = (event, productId) => {
-
     const updatedCartItems = cartItems.map((item) => {
       if (item.id === productId && item.quantity <= item.unitsInStock) {
         return {
@@ -123,21 +123,16 @@ const App = () => {
 
       return item;
     });
-    setCartItems(updatedCartItems)
-  }
+    setCartItems(updatedCartItems);
+  };
 
-  handleRemove(productId) {
-    const { cartItems } = this.state;
+  const handleRemove = (productId) => {
     const updatedCartItems = cartItems.filter((item) => item.id !== productId);
 
-    this.setState({
-      cartItems: updatedCartItems,
-    });
-  }
+    setCartItems(updatedCartItems);
+  };
 
-  handleDownVote(productId) {
-    const { products } = this.state;
-
+  const handleDownVote = (productId) => {
     const updatedProducts = products.map((product) => {
       if (
         product.id === productId &&
@@ -159,12 +154,10 @@ const App = () => {
       return product;
     });
 
-    this.setState({ products: updatedProducts });
-  }
+    setProducts(updatedProducts);
+  };
 
-  handleUpVote(productId) {
-    const { products } = this.state;
-
+  const handleUpVote = (productId) => {
     const updatedProducts = products.map((product) => {
       if (
         product.id === productId &&
@@ -185,12 +178,10 @@ const App = () => {
       return product;
     });
 
-    this.setState({ products: updatedProducts });
-  }
+    setProducts(updatedProducts);
+  };
 
-  handleSetFavorite(productId) {
-    const { products } = this.state;
-
+  const handleSetFavorite = (productId) => {
     const updatedProducts = products.map((product) => {
       if (product.id === productId) {
         return {
@@ -202,58 +193,55 @@ const App = () => {
       return product;
     });
 
-    this.setState({ products: updatedProducts });
-  }
+    setProducts(updatedProducts);
+  };
 
-  saveNewProduct(newProduct) {
-    this.setState((prevState) => ({
-      products: [newProduct, ...prevState.products],
-      newProductFormOpen: !prevState.newProductFormOpen,
-    }));
-  }
+  const saveNewProduct = (newProduct) => {
+    setProducts((prevState) => [newProduct, ...prevState.products]);
+    setNewProductFormOpen((prevState) => !prevState.newProductFormOpen);
+  };
 
-  render() {
-    const {
-      cartItems,
-      products,
-      isLoading,
-      hasError,
-      loadingError,
-    } = this.state;
+  // render() {
+  //   const {
+  //     cartItems,
+  //     products,
+  //     isLoading,
+  //     hasError,
+  //     loadingError,
+  //   } = this.state;
 
-    return (
-      <BrowserRouter>
-        <Route
-          path="/"
-          exact
-          render={(routeProps) => (
-            <Home
-              {...routeProps}
-              fullWidth
-              cartItems={cartItems}
-              products={products}
-              isLoading={isLoading}
-              hasError={hasError}
-              loadingError={loadingError}
-              handleDownVote={handleDownVote}
-              handleUpVote={handleUpVote}
-              handleSetFavorite={handleSetFavorite}
-              handleAddToCart={handleAddToCart}
-              handleRemove={handleRemove}
-              handleChange={handleChange}
-            />
-          )}
-        />
-        <Route
-          path="/new-product"
-          exact
-          render={(routeProps) => (
-            <NewProduct {...routeProps} saveNewProduct={this.saveNewProduct} />
-          )}
-        />
-      </BrowserRouter>
-    );
-  }
-}
+  return (
+    <BrowserRouter>
+      <Route
+        path="/"
+        exact
+        render={(routeProps) => (
+          <Home
+            {...routeProps}
+            fullWidth
+            cartItems={cartItems}
+            products={products}
+            isLoading={isLoading}
+            hasError={hasError}
+            loadingError={loadingError}
+            handleDownVote={handleDownVote}
+            handleUpVote={handleUpVote}
+            handleSetFavorite={handleSetFavorite}
+            handleAddToCart={handleAddToCart}
+            handleRemove={handleRemove}
+            handleChange={handleChange}
+          />
+        )}
+      />
+      <Route
+        path="/new-product"
+        exact
+        render={(routeProps) => (
+          <NewProduct {...routeProps} saveNewProduct={saveNewProduct} />
+        )}
+      />
+    </BrowserRouter>
+  );
+};
 
 export default App;
